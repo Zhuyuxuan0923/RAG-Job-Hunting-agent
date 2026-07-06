@@ -110,7 +110,6 @@ def generate_node(state: AgentState) -> AgentState:
         model=settings.model_name,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
-        response_format={"type": "json_object"},
     )
     state["final_answer"] = resp.choices[0].message.content or "{}"
     state["next_action"] = "done"

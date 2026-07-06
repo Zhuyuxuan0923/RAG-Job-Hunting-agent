@@ -29,7 +29,6 @@ def reflect(search_results: List[Dict], sub_queries: List[str], intent: str) -> 
         model=settings.model_name,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
-        response_format={"type": "json_object"},
     )
     return json.loads(resp.choices[0].message.content or "{}")
 

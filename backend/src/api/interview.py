@@ -44,7 +44,6 @@ async def start_interview(req: InterviewStartRequest):
   {{"question": "...", "category": "...", "expected_points": ["..."]}}
 ]"""}],
         temperature=0.8,
-        response_format={"type": "json_object"},
     )
 
     try:
@@ -101,7 +100,6 @@ async def submit_answer(session_id: str, req: AnswerRequest):
 {{"score": 8, "feedback": "整体评价", "strengths": ["优点1"], "improvements": ["改进1"], "model_answer": "参考答案"}}
 """}],
         temperature=0.5,
-        response_format={"type": "json_object"},
     )
 
     feedback = json.loads(resp.choices[0].message.content or "{}")
@@ -174,7 +172,6 @@ async def get_interview_report(session_id: str):
 }}
 """}],
         temperature=0.5,
-        response_format={"type": "json_object"},
     )
 
     extra = json.loads(resp.choices[0].message.content or "{}")

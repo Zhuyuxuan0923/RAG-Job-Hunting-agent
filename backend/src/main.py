@@ -1,6 +1,10 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from src.api.resume import router as resume_router
+from src.api.jd import router as jd_router
+from src.api.match import router as match_router
+from src.api.interview import router as interview_router
 
 
 @asynccontextmanager
@@ -21,6 +25,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(resume_router)
+app.include_router(jd_router)
+app.include_router(match_router)
+app.include_router(interview_router)
 
 
 @app.get("/api/health")

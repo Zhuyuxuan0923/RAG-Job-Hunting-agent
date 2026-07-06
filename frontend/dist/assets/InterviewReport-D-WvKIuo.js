@@ -1,1 +1,0 @@
-import{_ as t,o as r,c as o,a as s}from"./index-BMYTQfRE.js";const n={},c={class:"interview-report"};function a(_,e){return r(),o("div",c,[...e[0]||(e[0]=[s("h1",null,"面试报告",-1)])])}const l=t(n,[["render",a]]);export{l as default};

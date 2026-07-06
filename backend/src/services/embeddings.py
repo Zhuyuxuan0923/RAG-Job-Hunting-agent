@@ -8,8 +8,8 @@ def _get_client() -> OpenAI:
     global _client
     if _client is None:
         _client = OpenAI(
-            api_key=settings.deepseek_api_key,
-            base_url=settings.deepseek_base_url,
+            api_key=settings.embedding_api_key,
+            base_url=settings.embedding_base_url,
         )
     return _client
 

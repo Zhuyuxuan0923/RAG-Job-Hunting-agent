@@ -40,12 +40,14 @@ class VectorStore:
         out = []
         if results["ids"] and results["ids"][0]:
             for i in range(len(results["ids"][0])):
-                out.append({
+                item = {
                     "id": results["ids"][0][i],
                     "text": results["documents"][0][i] if results["documents"] else "",
                     "score": results["distances"][0][i] if results["distances"] else 0,
-                    **results["metadatas"][0][i] if results["metadatas"] else {},
-                })
+                }
+                if results["metadatas"] and results["metadatas"][0]:
+                    item.update(results["metadatas"][0][i])
+                out.append(item)
         return out
 
     def clear_collection(self, collection_name: str):

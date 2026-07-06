@@ -1,0 +1,1 @@
+import{_ as t,o as s,c as n,a as o}from"./index-BMYTQfRE.js";const r={},a={class:"interview-page"};function c(_,e){return s(),n("div",a,[...e[0]||(e[0]=[o("h1",null,"模拟面试",-1)])])}const l=t(r,[["render",c]]);export{l as default};

@@ -1,0 +1,1 @@
+import{_ as a,o as s,c as t,a as o}from"./index-BMYTQfRE.js";const n={},c={class:"upload-page"};function r(l,e){return s(),t("div",c,[...e[0]||(e[0]=[o("h1",null,"上传简历 & JD",-1),o("p",null,"拖拽或粘贴简历和职位描述，开始智能分析",-1)])])}const d=a(n,[["render",r]]);export{d as default};

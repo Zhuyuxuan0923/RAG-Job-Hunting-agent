@@ -1,0 +1,1 @@
+import{_ as t,o,c as r,a as s}from"./index-BMYTQfRE.js";const c={},a={class:"match-report"};function n(_,e){return o(),r("div",a,[...e[0]||(e[0]=[s("h1",null,"匹配度分析报告",-1)])])}const d=t(c,[["render",n]]);export{d as default};

@@ -26,10 +26,18 @@ async def _event_stream(task_id: str, state: AgentState):
     async for event in graph.astream(state, stream_mode="updates"):
         node_name = list(event.keys())[0]
         node_data = event[node_name]
+        state.update(node_data)
         yield f"event: thinking\ndata: {json.dumps({'action': node_name, 'detail': str(node_data.get('next_action', '')), 'search_round': node_data.get('search_round', 0)}, ensure_ascii=False)}\n\n"
 
     try:
-        result = json.loads(state.get("final_answer", "{}"))
+        raw = state.get("final_answer", "{}")
+        # Strip markdown code fences if present
+        if "```" in raw:
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
+        result = json.loads(raw)
     except json.JSONDecodeError:
         result = {"overall_score": 0, "skill_match": [], "skill_gaps": [], "company_background": "", "interview_experience": "", "suggestions": [], "preparation_checklist": []}
 

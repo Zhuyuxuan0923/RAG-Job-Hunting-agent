@@ -10,6 +10,9 @@ from src.agent.prompts import (
 )
 
 
+THINKING_DISABLED = {"thinking": {"type": "disabled"}}
+
+
 def _llm():
     return OpenAI(api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url)
 
@@ -20,6 +23,7 @@ def classify_node(state: AgentState) -> AgentState:
         model=settings.model_name,
         messages=[{"role": "user", "content": CLASSIFY_PROMPT.format(query=state["query"])}],
         temperature=0.3,
+        extra_body=THINKING_DISABLED,
     )
     intent = resp.choices[0].message.content.strip().lower()
     if "interview" in intent:
@@ -40,6 +44,7 @@ def plan_node(state: AgentState) -> AgentState:
             jd_text=state.get("jd_text", ""),
         )}],
         temperature=0.5,
+        extra_body=THINKING_DISABLED,
     )
     lines = resp.choices[0].message.content.strip().split("\n")
     state["sub_queries"] = [line.lstrip("0123456789.-) ") for line in lines if line.strip()]
@@ -110,6 +115,7 @@ def generate_node(state: AgentState) -> AgentState:
         model=settings.model_name,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
+        extra_body=THINKING_DISABLED,
     )
     state["final_answer"] = resp.choices[0].message.content or "{}"
     state["next_action"] = "done"

@@ -3,6 +3,8 @@ from typing import Dict, Any, List
 from openai import OpenAI
 from src.config import settings
 
+THINKING_DISABLED = {"thinking": {"type": "disabled"}}
+
 
 def reflect(search_results: List[Dict], sub_queries: List[str], intent: str) -> Dict[str, Any]:
     client = OpenAI(api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url)
@@ -29,8 +31,15 @@ def reflect(search_results: List[Dict], sub_queries: List[str], intent: str) -> 
         model=settings.model_name,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
+        extra_body=THINKING_DISABLED,
     )
-    return json.loads(resp.choices[0].message.content or "{}")
+    content = resp.choices[0].message.content or "{}"
+    if "```" in content:
+        content = content.split("```")[1]
+        if content.startswith("json"):
+            content = content[4:]
+        content = content.strip()
+    return json.loads(content)
 
 
 def should_continue(reflection_result: Dict[str, Any], max_rounds: int, current_round: int) -> bool:

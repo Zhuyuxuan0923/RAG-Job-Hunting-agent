@@ -9,6 +9,8 @@ from src.models.schemas import (
     InterviewQuestion, QuestionReview, WeakArea, StudyPlanItem,
 )
 
+THINKING_DISABLED = {"thinking": {"type": "disabled"}}
+
 router = APIRouter(prefix="/api/interview", tags=["interview"])
 
 _sessions: dict = {}
@@ -44,6 +46,7 @@ async def start_interview(req: InterviewStartRequest):
   {{"question": "...", "category": "...", "expected_points": ["..."]}}
 ]"""}],
         temperature=0.8,
+        extra_body=THINKING_DISABLED,
     )
 
     try:
@@ -100,6 +103,7 @@ async def submit_answer(session_id: str, req: AnswerRequest):
 {{"score": 8, "feedback": "整体评价", "strengths": ["优点1"], "improvements": ["改进1"], "model_answer": "参考答案"}}
 """}],
         temperature=0.5,
+        extra_body=THINKING_DISABLED,
     )
 
     feedback = json.loads(resp.choices[0].message.content or "{}")
@@ -172,6 +176,7 @@ async def get_interview_report(session_id: str):
 }}
 """}],
         temperature=0.5,
+        extra_body=THINKING_DISABLED,
     )
 
     extra = json.loads(resp.choices[0].message.content or "{}")

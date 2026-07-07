@@ -79,6 +79,51 @@ npm run dev
 
 打开 http://localhost:5173 使用。
 
+## Docker 部署
+
+适合部署到腾讯云轻量应用服务器等云环境。
+
+### 1. 准备服务器
+
+```bash
+# 安装 Docker 和 Docker Compose（以 Ubuntu 为例）
+sudo apt update && sudo apt install docker.io docker-compose-v2 -y
+sudo systemctl enable docker --now
+```
+
+### 2. 拉取项目
+
+```bash
+git clone https://github.com/Zhuyuxuan0923/RAG-Job-Hunting-agent.git
+cd RAG-Job-Hunting-agent
+```
+
+### 3. 配置环境变量
+
+```bash
+cp .env.example .env
+# 编辑 .env，填入你的 API Key
+vim .env
+```
+
+### 4. 构建并启动
+
+```bash
+docker compose up -d
+```
+
+启动后访问 `http://<服务器IP>` 即可使用。
+
+### 常用命令
+
+```bash
+docker compose up -d        # 启动
+docker compose down         # 停止
+docker compose logs -f      # 查看日志
+docker compose build --no-cache  # 重新构建
+docker compose restart      # 重启
+```
+
 ## 项目结构
 
 ```

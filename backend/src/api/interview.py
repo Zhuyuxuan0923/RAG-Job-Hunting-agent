@@ -73,7 +73,22 @@ async def start_interview(req: InterviewStartRequest):
         "current_index": 0,
     }
 
-    return InterviewStartResponse(session_id=session_id, total_questions=len(processed))
+    first_q = None
+    if processed:
+        first_q_data = processed[0]
+        first_q = InterviewQuestion(
+            question_number=first_q_data["question_number"],
+            total_questions=first_q_data["total_questions"],
+            question=first_q_data["question"],
+            category=first_q_data["category"],
+            expected_points=first_q_data.get("expected_points", []),
+        )
+
+    return InterviewStartResponse(
+        session_id=session_id,
+        total_questions=len(processed),
+        first_question=first_q,
+    )
 
 
 @router.post("/{session_id}/answer", response_model=InterviewFeedback)

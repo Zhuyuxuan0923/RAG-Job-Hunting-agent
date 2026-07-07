@@ -1,7 +1,13 @@
 <template>
   <div class="score-circle">
     <svg viewBox="0 0 120 120" class="circle-svg">
-      <circle cx="60" cy="60" r="52" fill="none" stroke="#e0e0e0" stroke-width="8" />
+      <defs>
+        <filter id="score-glow">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#e8e8ee" stroke-width="8" />
       <circle
         cx="60" cy="60" r="52"
         fill="none"
@@ -12,6 +18,7 @@
         :stroke-dashoffset="offset"
         transform="rotate(-90 60 60)"
         class="progress-ring"
+        filter="url(#score-glow)"
       />
     </svg>
     <div class="score-text">
@@ -39,16 +46,17 @@ const color = computed(() => {
 <style scoped>
 .score-circle {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
   margin: 0 auto;
 }
 .circle-svg {
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.08));
 }
 .progress-ring {
-  transition: stroke-dashoffset 1s ease;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .score-text {
   position: absolute;
@@ -58,12 +66,14 @@ const color = computed(() => {
   text-align: center;
 }
 .score-value {
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   display: block;
+  letter-spacing: -0.5px;
 }
 .score-label {
   font-size: 12px;
   color: var(--color-text-secondary);
+  font-weight: 500;
 }
 </style>

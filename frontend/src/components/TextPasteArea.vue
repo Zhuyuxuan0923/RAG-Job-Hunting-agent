@@ -29,6 +29,11 @@ watch(() => props.modelValue, (v) => { content.value = v })
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--color-surface);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.paste-area:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 .paste-input {
   width: 100%;
@@ -39,11 +44,14 @@ watch(() => props.modelValue, (v) => { content.value = v })
   resize: vertical;
   outline: none;
   line-height: 1.6;
+  background: transparent;
 }
 .paste-footer {
   padding: 8px 16px;
   border-top: 1px solid var(--color-border);
   font-size: 12px;
   color: var(--color-text-secondary);
+  display: flex;
+  justify-content: flex-end;
 }
 </style>

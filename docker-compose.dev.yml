@@ -1,0 +1,36 @@
+# 开发模式：前端热重载 + 后端热重载
+# 使用: docker compose -f docker-compose.dev.yml up -d
+
+services:
+  backend:
+    build: ./backend
+    container_name: rag-backend-dev
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - CHROMA_PERSIST_DIR=/app/chroma_data
+    volumes:
+      - ./backend/src:/app/src
+      - chroma_data_dev:/app/chroma_data
+    restart: unless-stopped
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+
+  frontend:
+    image: node:22-alpine
+    container_name: rag-frontend-dev
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  chroma_data_dev:
+    name: rag-chroma-data-dev

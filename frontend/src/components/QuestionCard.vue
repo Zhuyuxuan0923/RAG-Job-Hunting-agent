@@ -32,20 +32,31 @@ const categoryLabel = computed(() => {
   border: 1px solid var(--color-border);
   border-left: 4px solid var(--color-primary);
   border-radius: var(--radius);
-  padding: 20px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow-xs);
 }
 .q-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+  align-items: center;
+  margin-bottom: 14px;
 }
-.q-number { font-size: 13px; font-weight: 600; color: var(--color-primary); }
+.q-number {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
 .q-category {
   font-size: 12px;
-  background: #e8f0fe;
+  font-weight: 600;
+  background: var(--color-primary-light);
   color: var(--color-primary);
-  padding: 2px 10px;
-  border-radius: 12px;
+  padding: 3px 12px;
+  border-radius: 14px;
 }
-.q-text { font-size: 16px; line-height: 1.7; }
+.q-text {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--color-text);
+}
 </style>

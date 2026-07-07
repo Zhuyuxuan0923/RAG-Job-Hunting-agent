@@ -53,6 +53,7 @@ class InterviewStartRequest(BaseModel):
 class InterviewStartResponse(BaseModel):
     session_id: str
     total_questions: int
+    first_question: Optional[InterviewQuestion] = None
 
 
 class AnswerRequest(BaseModel):

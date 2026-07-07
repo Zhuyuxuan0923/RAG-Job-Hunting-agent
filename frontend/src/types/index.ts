@@ -39,6 +39,7 @@ export interface SkillMatchItem {
 export interface InterviewStartResponse {
   session_id: string
   total_questions: number
+  first_question: InterviewQuestion | null
 }
 
 export interface InterviewQuestion {

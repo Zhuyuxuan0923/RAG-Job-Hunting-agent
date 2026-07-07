@@ -6,8 +6,8 @@
     </div>
     <div class="stream-body" ref="bodyRef">
       <div v-for="(item, i) in items" :key="i" class="think-item">
-        <span class="think-action">{{ item.action }}</span>
-        <span class="think-detail">{{ item.detail }}</span>
+        <span class="think-action">{{ labelOf(item.action) }}</span>
+        <span class="think-detail">{{ detailOf(item.action) }}</span>
         <span v-if="item.search_round" class="think-round">第 {{ item.search_round }} 轮</span>
       </div>
     </div>
@@ -19,6 +19,32 @@ import { watch, ref } from 'vue'
 
 const props = defineProps<{ items: Array<{ action: string; detail: string; search_round: number }> }>()
 const bodyRef = ref<HTMLElement>()
+
+const LABELS: Record<string, string> = {
+  classify: '意图识别',
+  plan: '检索规划',
+  search: '信息检索',
+  fuse: '结果融合',
+  reflect: '质量反思',
+  generate: '生成报告',
+}
+
+const DETAILS: Record<string, string> = {
+  classify: '正在分析用户意图...',
+  plan: '正在拆解检索子问题...',
+  search: '正在搜索简历、JD 和网络信息...',
+  fuse: '正在去重和整合检索结果...',
+  reflect: '正在评估检索质量，必要时补充搜索...',
+  generate: '正在生成岗位匹配度分析报告...',
+}
+
+function labelOf(action: string): string {
+  return LABELS[action] || action
+}
+
+function detailOf(action: string): string {
+  return DETAILS[action] || ''
+}
 
 watch(() => props.items.length, () => {
   if (bodyRef.value) {

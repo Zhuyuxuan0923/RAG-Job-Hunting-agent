@@ -1,23 +1,20 @@
 import uuid
 import json
 from fastapi import APIRouter
-from openai import OpenAI
 from src.config import settings
 from src.models.schemas import (
     InterviewStartRequest, InterviewStartResponse,
     AnswerRequest, InterviewFeedback, InterviewReportResponse,
     InterviewQuestion, QuestionReview, WeakArea, StudyPlanItem,
 )
-
-THINKING_DISABLED = {"thinking": {"type": "disabled"}}
+from src.agent.llm_client import (
+    get_client, THINKING_DISABLED, call_with_tool,
+    TOOL_INTERVIEW_QUESTIONS, TOOL_ANSWER_EVALUATION, TOOL_INTERVIEW_REPORT,
+)
 
 router = APIRouter(prefix="/api/interview", tags=["interview"])
 
 _sessions: dict = {}
-
-
-def _llm():
-    return OpenAI(api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url)
 
 
 @router.post("/start", response_model=InterviewStartResponse)
@@ -29,9 +26,7 @@ async def start_interview(req: InterviewStartRequest):
     resume_data = _resumes.get(req.resume_id, {}).get("parsed_text", "")
     jd_data = _jds.get(req.jd_id, {}).get("parsed_text", "")
 
-    client = _llm()
-    resp = client.chat.completions.create(
-        model=settings.model_name,
+    result = call_with_tool(
         messages=[{"role": "user", "content": f"""基于以下信息，生成 5 道面试题：
 
 ## 简历
@@ -40,20 +35,14 @@ async def start_interview(req: InterviewStartRequest):
 ## JD
 {jd_data}
 
-每道题覆盖不同维度(技术能力/项目经验/行为面试/系统设计/解决问题)。
-返回 JSON 数组：
-[
-  {{"question": "...", "category": "...", "expected_points": ["..."]}}
-]"""}],
+每道题覆盖不同维度(技术能力/项目经验/行为面试/系统设计/解决问题)。"""}],
+        tools=[TOOL_INTERVIEW_QUESTIONS],
+        tool_choice={"type": "function", "function": {"name": "output_interview_questions"}},
         temperature=0.8,
-        extra_body=THINKING_DISABLED,
+        default={"questions": []},
     )
 
-    try:
-        raw = json.loads(resp.choices[0].message.content or "[]")
-        questions = raw if isinstance(raw, list) else raw.get("questions", [])
-    except json.JSONDecodeError:
-        questions = []
+    questions = result.get("questions", [])
 
     processed = []
     for i, q in enumerate(questions):
@@ -100,9 +89,7 @@ async def submit_answer(session_id: str, req: AnswerRequest):
     questions = session["questions"]
     current_q = questions[session["current_index"]]
 
-    client = _llm()
-    resp = client.chat.completions.create(
-        model=settings.model_name,
+    feedback = call_with_tool(
         messages=[{"role": "user", "content": f"""评估面试回答：
 
 ## 题目
@@ -114,14 +101,12 @@ async def submit_answer(session_id: str, req: AnswerRequest):
 ## 候选人回答
 {req.answer}
 
-请评分(0-10)并给出反馈。返回 JSON：
-{{"score": 8, "feedback": "整体评价", "strengths": ["优点1"], "improvements": ["改进1"], "model_answer": "参考答案"}}
-"""}],
+请评分(0-10)并给出反馈。"""}],
+        tools=[TOOL_ANSWER_EVALUATION],
+        tool_choice={"type": "function", "function": {"name": "output_answer_evaluation"}},
         temperature=0.5,
-        extra_body=THINKING_DISABLED,
+        default={"score": 0, "feedback": "", "strengths": [], "improvements": [], "model_answer": ""},
     )
-
-    feedback = json.loads(resp.choices[0].message.content or "{}")
 
     session["answers"].append({
         "question_number": current_q["question_number"],
@@ -176,25 +161,17 @@ async def get_interview_report(session_id: str):
     overall = round(total / len(answers) * 10)
 
     records_text = json.dumps(answers, ensure_ascii=False)
-    client = _llm()
-    resp = client.chat.completions.create(
-        model=settings.model_name,
+
+    extra = call_with_tool(
         messages=[{"role": "user", "content": f"""基于以下面试记录生成面试报告：
 
 ## 面试记录
-{records_text}
-
-返回 JSON：
-{{
-  "weak_areas": [{{"area": "技术深度", "score": 6, "description": "..."}}],
-  "study_plan": [{{"topic": "...", "priority": "high", "resources": ["..."], "timeline": "1-2周"}}]
-}}
-"""}],
+{records_text}"""}],
+        tools=[TOOL_INTERVIEW_REPORT],
+        tool_choice={"type": "function", "function": {"name": "output_interview_report"}},
         temperature=0.5,
-        extra_body=THINKING_DISABLED,
+        default={"weak_areas": [], "study_plan": []},
     )
-
-    extra = json.loads(resp.choices[0].message.content or "{}")
 
     questions_review = []
     for a in answers:

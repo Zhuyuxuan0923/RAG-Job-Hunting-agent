@@ -58,8 +58,8 @@ def compare_skills(resume_skills: str, jd_skills: str) -> str:
 @tool
 def generate_question(category: str, skill_gap: str, difficulty: str = "medium") -> str:
     """基于技能缺口生成面试题目。category: technical/behavioral/project, difficulty: easy/medium/hard"""
-    from openai import OpenAI
-    client = OpenAI(api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url)
+    from src.agent.llm_client import get_client, THINKING_DISABLED
+    client = get_client()
     resp = client.chat.completions.create(
         model=settings.model_name,
         messages=[{
@@ -67,6 +67,7 @@ def generate_question(category: str, skill_gap: str, difficulty: str = "medium")
             "content": f"你是一位资深面试官。针对候选人的技能缺口「{skill_gap}」，出一道{difficulty}难度的{category}类面试题。只输出题目本身。",
         }],
         temperature=0.7,
+        extra_body=THINKING_DISABLED,
     )
     return resp.choices[0].message.content or ""
 

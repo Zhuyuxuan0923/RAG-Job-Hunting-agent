@@ -31,12 +31,6 @@ async def _event_stream(task_id: str, state: AgentState):
 
     try:
         raw = state.get("final_answer", "{}")
-        # Strip markdown code fences if present
-        if "```" in raw:
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-            raw = raw.strip()
         result = json.loads(raw)
     except json.JSONDecodeError:
         result = {"overall_score": 0, "skill_match": [], "skill_gaps": [], "company_background": "", "interview_experience": "", "suggestions": [], "preparation_checklist": []}

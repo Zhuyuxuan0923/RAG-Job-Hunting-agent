@@ -1,6 +1,5 @@
 import json
 from langgraph.graph import StateGraph, END
-from openai import OpenAI
 from src.config import settings
 from src.agent.state import AgentState
 from src.agent.tools import search_resume, search_jd, web_search, compare_skills
@@ -8,17 +7,13 @@ from src.agent.reflection import reflect, should_continue
 from src.agent.prompts import (
     CLASSIFY_PROMPT, PLAN_PROMPT, GENERATE_MATCH_PROMPT,
 )
-
-
-THINKING_DISABLED = {"thinking": {"type": "disabled"}}
-
-
-def _llm():
-    return OpenAI(api_key=settings.deepseek_api_key, base_url=settings.deepseek_base_url)
+from src.agent.llm_client import (
+    get_client, THINKING_DISABLED, call_with_tool, TOOL_MATCH_REPORT,
+)
 
 
 def classify_node(state: AgentState) -> AgentState:
-    client = _llm()
+    client = get_client()
     resp = client.chat.completions.create(
         model=settings.model_name,
         messages=[{"role": "user", "content": CLASSIFY_PROMPT.format(query=state["query"])}],
@@ -34,7 +29,7 @@ def classify_node(state: AgentState) -> AgentState:
 
 
 def plan_node(state: AgentState) -> AgentState:
-    client = _llm()
+    client = get_client()
     resp = client.chat.completions.create(
         model=settings.model_name,
         messages=[{"role": "user", "content": PLAN_PROMPT.format(
@@ -105,19 +100,21 @@ def reflect_node(state: AgentState) -> AgentState:
 
 
 def generate_node(state: AgentState) -> AgentState:
-    client = _llm()
     prompt = GENERATE_MATCH_PROMPT.format(
         resume_text=state.get("resume_text", ""),
         jd_text=state.get("jd_text", ""),
         search_results=json.dumps(state["fused_results"], ensure_ascii=False),
     )
-    resp = client.chat.completions.create(
-        model=settings.model_name,
+    result = call_with_tool(
         messages=[{"role": "user", "content": prompt}],
+        tools=[TOOL_MATCH_REPORT],
+        tool_choice={"type": "function", "function": {"name": "output_match_report"}},
         temperature=0.7,
-        extra_body=THINKING_DISABLED,
+        default={"overall_score": 0, "skill_match": [], "skill_gaps": [],
+                  "company_background": "", "interview_experience": "",
+                  "suggestions": [], "preparation_checklist": []},
     )
-    state["final_answer"] = resp.choices[0].message.content or "{}"
+    state["final_answer"] = json.dumps(result, ensure_ascii=False)
     state["next_action"] = "done"
     return state
 

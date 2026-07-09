@@ -37,7 +37,7 @@ async def start_interview(req: InterviewStartRequest):
 
 每道题覆盖不同维度(技术能力/项目经验/行为面试/系统设计/解决问题)。"""}],
         tools=[TOOL_INTERVIEW_QUESTIONS],
-        tool_choice={"type": "function", "function": {"name": "output_interview_questions"}},
+        tool_choice="auto",
         temperature=0.8,
         default={"questions": []},
     )
@@ -103,7 +103,7 @@ async def submit_answer(session_id: str, req: AnswerRequest):
 
 请评分(0-10)并给出反馈。"""}],
         tools=[TOOL_ANSWER_EVALUATION],
-        tool_choice={"type": "function", "function": {"name": "output_answer_evaluation"}},
+        tool_choice="auto",
         temperature=0.5,
         default={"score": 0, "feedback": "", "strengths": [], "improvements": [], "model_answer": ""},
     )
@@ -168,7 +168,7 @@ async def get_interview_report(session_id: str):
 ## 面试记录
 {records_text}"""}],
         tools=[TOOL_INTERVIEW_REPORT],
-        tool_choice={"type": "function", "function": {"name": "output_interview_report"}},
+        tool_choice="auto",
         temperature=0.5,
         default={"weak_areas": [], "study_plan": []},
     )

@@ -108,7 +108,7 @@ def generate_node(state: AgentState) -> AgentState:
     result = call_with_tool(
         messages=[{"role": "user", "content": prompt}],
         tools=[TOOL_MATCH_REPORT],
-        tool_choice={"type": "function", "function": {"name": "output_match_report"}},
+        tool_choice="auto",
         temperature=0.7,
         default={"overall_score": 0, "skill_match": [], "skill_gaps": [],
                   "company_background": "", "interview_experience": "",

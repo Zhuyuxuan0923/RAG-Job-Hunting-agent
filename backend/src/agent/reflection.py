@@ -23,7 +23,7 @@ def reflect(search_results: List[Dict], sub_queries: List[str], intent: str) -> 
     return call_with_tool(
         messages=[{"role": "user", "content": prompt}],
         tools=[TOOL_REFLECTION],
-        tool_choice={"type": "function", "function": {"name": "output_reflection"}},
+        tool_choice="auto",
         temperature=0.3,
         default={
             "coverage": {"pass": True, "reason": ""},

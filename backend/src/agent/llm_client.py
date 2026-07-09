@@ -2,13 +2,18 @@
 Centralized LLM client and structured-output helpers.
 
 All LLM calls that need structured JSON output should use call_with_tool()
-so that the model is forced to emit valid JSON via function-calling / tool-use.
+so that the model emits valid JSON via function-calling / tool-use, with a
+fallback to plain prompt-based JSON parsing.
 """
 
 import json
+import logging
 from typing import Any
 from openai import OpenAI
 from src.config import settings
+
+logging.basicConfig(level=logging.INFO, format="[%(name)s] %(levelname)s: %(message)s")
+logger = logging.getLogger(__name__)
 
 THINKING_DISABLED = {"thinking": {"type": "disabled"}}
 
@@ -25,6 +30,19 @@ def get_client() -> OpenAI:
     return _client
 
 
+def _parse_json_from_content(content: str) -> Any:
+    """Try to extract and parse JSON from raw LLM text output."""
+    if not content:
+        raise json.JSONDecodeError("empty content", "", 0)
+    cleaned = content
+    if "```" in cleaned:
+        cleaned = cleaned.split("```")[1]
+        if cleaned.startswith("json"):
+            cleaned = cleaned[4:]
+        cleaned = cleaned.strip()
+    return json.loads(cleaned)
+
+
 def call_with_tool(
     *,
     messages: list[dict],
@@ -33,46 +51,74 @@ def call_with_tool(
     temperature: float = 0.7,
     default: Any = None,
 ) -> Any:
-    """Call the LLM with tool-use for guaranteed structured JSON output.
+    """Call the LLM with tool-use for structured JSON output.
 
-    The primary path is to read the arguments from the forced tool call.
-    If that fails (e.g. the provider doesn't support tool_choice="function"),
-    falls back to parsing the message content as JSON (with markdown-fence
-    stripping).  On total failure returns `default`.
+    Tries, in order:
+      1. Parse tool_call arguments (primary path)
+      2. Parse message content as JSON (fallback 1 – same request)
+      3. Retry WITHOUT tools, parsing content as JSON (fallback 2)
+      4. Return `default`
     """
     client = get_client()
-    resp = client.chat.completions.create(
-        model=settings.model_name,
-        messages=messages,
-        tools=tools,
-        tool_choice=tool_choice,
-        temperature=temperature,
-        extra_body=THINKING_DISABLED,
-    )
+    tool_name = tools[0]["function"]["name"] if tools else "unknown"
 
-    msg = resp.choices[0].message
-
-    # Path 1 – the expected tool call
-    if msg.tool_calls:
-        try:
-            return json.loads(msg.tool_calls[0].function.arguments)
-        except (json.JSONDecodeError, AttributeError, IndexError):
-            pass
-
-    # Path 2 – fallback: parse content as JSON
-    content = msg.content or ""
-    if "```" in content:
-        content = content.split("```")[1]
-        if content.startswith("json"):
-            content = content[4:]
-        content = content.strip()
-
+    # ── Phase 1: try with tools ──────────────────────────────
     try:
-        return json.loads(content)
-    except json.JSONDecodeError:
-        if default is not None:
-            return default
-        raise
+        resp = client.chat.completions.create(
+            model=settings.model_name,
+            messages=messages,
+            tools=tools,
+            tool_choice=tool_choice,
+            temperature=temperature,
+            extra_body=THINKING_DISABLED,
+        )
+        msg = resp.choices[0].message
+
+        # Path 1 – tool call
+        if msg.tool_calls:
+            try:
+                result = json.loads(msg.tool_calls[0].function.arguments)
+                logger.info(f"[{tool_name}] tool call OK, {len(msg.tool_calls[0].function.arguments)} bytes")
+                return result
+            except (json.JSONDecodeError, AttributeError, IndexError) as e:
+                logger.warning(f"[{tool_name}] tool call args parse failed: {e} | raw={msg.tool_calls[0].function.arguments[:200] if msg.tool_calls else 'N/A'}")
+
+        # Path 2 – content fallback (same response)
+        content = msg.content or ""
+        try:
+            result = _parse_json_from_content(content)
+            logger.info(f"[{tool_name}] content parse OK (from tool request)")
+            return result
+        except json.JSONDecodeError:
+            logger.warning(f"[{tool_name}] content parse failed | preview={content[:300]}")
+
+    except Exception as e:
+        logger.error(f"[{tool_name}] API call failed: {e}")
+
+    # ── Phase 2: retry without tools ─────────────────────────
+    logger.info(f"[{tool_name}] retrying without tools (plain prompt mode)...")
+    try:
+        resp = client.chat.completions.create(
+            model=settings.model_name,
+            messages=messages,
+            temperature=temperature,
+            extra_body=THINKING_DISABLED,
+        )
+        content = resp.choices[0].message.content or ""
+        try:
+            result = _parse_json_from_content(content)
+            logger.info(f"[{tool_name}] plain prompt retry OK")
+            return result
+        except json.JSONDecodeError:
+            logger.warning(f"[{tool_name}] plain prompt retry parse failed | preview={content[:300]}")
+    except Exception as e:
+        logger.error(f"[{tool_name}] plain prompt retry API error: {e}")
+
+    # ── Phase 3: return default ──────────────────────────────
+    logger.warning(f"[{tool_name}] all paths failed, returning default")
+    if default is not None:
+        return default
+    raise RuntimeError(f"[{tool_name}] all structured-output paths failed")
 
 
 # ── Tool schemas ──────────────────────────────────────────────

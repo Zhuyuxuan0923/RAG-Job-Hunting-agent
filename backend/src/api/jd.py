@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, Request, UploadFile, File, Form
 from src.models.schemas import JDUploadResponse
 from src.services.parser import parse_file, parse_text
 from src.services.chunker import chunk_jd
@@ -12,6 +12,7 @@ _jds: dict = {}
 
 @router.post("/upload", response_model=JDUploadResponse)
 async def upload_jd(
+    request: Request,
     file: UploadFile | None = File(None),
     text: str | None = Form(None),
 ):
@@ -22,13 +23,15 @@ async def upload_jd(
         file_bytes = await file.read()
         title = file.filename
         parsed = parse_file(file_bytes, title)
-    elif text:
-        parsed = parse_text(text)
-        lines = parsed.split("\n")
-        title = lines[0][:50] if lines else "text_input"
     else:
-        parsed = ""
-
+        body_text = text
+        if body_text is None and request.headers.get("content-type", "").startswith("application/json"):
+            payload = await request.json()
+            body_text = payload.get("text") if isinstance(payload, dict) else None
+        parsed = parse_text(body_text) if body_text else ""
+        if body_text:
+            lines = parsed.split("\n")
+            title = lines[0][:50] if lines else "text_input"
     _jds[jd_id] = {"title": title, "parsed_text": parsed}
 
     chunks = chunk_jd(parsed)

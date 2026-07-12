@@ -36,6 +36,8 @@ class SkillMatchItem(BaseModel):
 
 class MatchReportResponse(BaseModel):
     task_id: str
+    resume_id: str = ""
+    jd_id: str = ""
     overall_score: int
     skill_match: List[SkillMatchItem]
     skill_gaps: List[str]

@@ -20,6 +20,8 @@ export interface MatchProgress {
 
 export interface MatchReport {
   task_id: string
+  resume_id?: string
+  jd_id?: string
   overall_score: number
   skill_match: SkillMatchItem[]
   skill_gaps: string[]

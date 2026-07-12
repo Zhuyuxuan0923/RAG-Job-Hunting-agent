@@ -44,3 +44,42 @@ async def test_health():
         resp = await client.get("/api/health")
     assert resp.status_code == 200
     assert resp.json() == {"status": "ok"}
+
+
+@pytest.mark.asyncio
+async def test_upload_resume_accepts_json_text():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.post("/api/resume/upload", json={"text": "张三\nVue 和 RAG 项目经验"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "resume_id" in data
+    assert "Vue 和 RAG" in data["parsed_text"]
+
+
+@pytest.mark.asyncio
+async def test_upload_jd_accepts_json_text():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.post("/api/jd/upload", json={"text": "前端工程师\n要求熟悉 Vue 和 AI 应用"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "jd_id" in data
+    assert "前端工程师" in data["parsed_text"]
+
+
+@pytest.mark.asyncio
+async def test_match_report_includes_source_ids():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        r1 = await client.post("/api/resume/upload", json={"text": "赵六\nVue 和 RAG 项目"})
+        r2 = await client.post("/api/jd/upload", json={"text": "前端工程师\nVue 和 AI 应用"})
+        resume_id = r1.json()["resume_id"]
+        jd_id = r2.json()["jd_id"]
+        match_resp = await client.post("/api/match", json={"resume_id": resume_id, "jd_id": jd_id})
+        task_id = match_resp.json()["task_id"]
+        report_resp = await client.get(f"/api/match/{task_id}/report")
+    assert report_resp.status_code == 200
+    data = report_resp.json()
+    assert data["resume_id"] == resume_id
+    assert data["jd_id"] == jd_id

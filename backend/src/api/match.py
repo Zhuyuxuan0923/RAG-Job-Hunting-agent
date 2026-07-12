@@ -88,8 +88,11 @@ async def stream_match(task_id: str):
 async def get_match_report(task_id: str):
     task = _tasks.get(task_id, {})
     report = task.get("report", {})
+    state = task.get("state", {})
     return MatchReportResponse(
         task_id=task_id,
+        resume_id=state.get("resume_id", ""),
+        jd_id=state.get("jd_id", ""),
         overall_score=report.get("overall_score", 0),
         skill_match=report.get("skill_match", []),
         skill_gaps=report.get("skill_gaps", []),

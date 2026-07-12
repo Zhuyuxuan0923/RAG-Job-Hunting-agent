@@ -26,7 +26,7 @@
       <div class="interview-header">
         <span class="interview-badge">AI 面试进行中</span>
         <span class="interview-progress">
-          {{ messages.filter(m => m.feedback).length }} / {{ messages.filter(m => m.role === 'interviewer' && m.question).length + messages.filter(m => m.feedback).length || '...' }}
+          {{ messages.filter(m => m.feedback).length }} / {{ totalQuestions || '...' }}
         </span>
       </div>
 
@@ -85,6 +85,7 @@ const loading = ref(false)
 const waiting = ref(false)
 const finished = ref(false)
 const sessionId = ref('')
+const totalQuestions = ref(0)
 const taskIdInput = ref(route.params.sessionId as string || '')
 
 interface Message {
@@ -99,8 +100,11 @@ async function start() {
   loading.value = true
   try {
     const matchReport = await api.getMatchReport(taskIdInput.value)
-    const res = await api.startInterview(matchReport.task_id, matchReport.task_id)
+    const resumeId = matchReport.resume_id || matchReport.task_id
+    const jdId = matchReport.jd_id || matchReport.task_id
+    const res = await api.startInterview(resumeId, jdId)
     sessionId.value = res.session_id
+    totalQuestions.value = res.total_questions
     if (res.first_question) {
       messages.value.push({ role: 'interviewer', content: '', question: res.first_question })
     }

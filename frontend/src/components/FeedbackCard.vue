@@ -35,74 +35,93 @@ const scoreClass = computed(() => {
 
 <style scoped>
 .feedback-card {
+  margin: 14px 0 18px 50px;
+  padding: 20px 22px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 22px 24px;
-  margin: 14px 0;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
 }
+
 .fb-header {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
+
 .fb-score {
   font-size: 28px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
+  font-weight: 850;
+  letter-spacing: 0;
 }
+
 .fb-score small {
-  font-size: 14px;
-  font-weight: 500;
   color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
 }
+
 .fb-score.high { color: var(--color-success); }
 .fb-score.mid { color: var(--color-warning); }
 .fb-score.low { color: var(--color-error); }
+
 .fb-label {
-  font-size: 13px;
   color: var(--color-text-secondary);
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 650;
 }
+
 .fb-text {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--color-text);
   margin-bottom: 6px;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.75;
 }
+
 .fb-section {
-  margin-top: 16px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-radius: var(--radius);
 }
+
 .fb-section.strengths {
   background: var(--color-success-light);
 }
+
 .fb-section.improvements {
   background: var(--color-warning-light);
 }
+
 .fb-section.model {
   background: var(--color-primary-light);
 }
+
 .fb-section h4 {
-  font-size: 13px;
-  font-weight: 700;
   margin-bottom: 8px;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 800;
 }
+
 .fb-section ul {
   padding-left: 20px;
 }
-.fb-section li {
-  font-size: 13px;
-  margin: 4px 0;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
+
+.fb-section li,
 .model-answer {
-  font-size: 14px;
-  line-height: 1.7;
   color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.fb-section li {
+  margin: 4px 0;
+}
+
+@media (max-width: 640px) {
+  .feedback-card {
+    margin-left: 0;
+  }
 }
 </style>

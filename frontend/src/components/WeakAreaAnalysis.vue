@@ -26,6 +26,7 @@ function scoreClass(score: number) {
   if (score >= 6) return 'mid'
   return 'low'
 }
+
 function barClass(score: number) {
   if (score >= 8) return 'high'
   if (score >= 6) return 'mid'
@@ -34,49 +35,82 @@ function barClass(score: number) {
 </script>
 
 <style scoped>
-.weak-areas { margin: 28px 0; }
-.weak-areas h3 {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
+.weak-areas {
+  margin: 28px 0;
 }
+
+.weak-areas h3 {
+  margin-bottom: 16px;
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 800;
+}
+
 .areas-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
+
 .area-card {
+  padding: 18px 20px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xs);
 }
+
 .area-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
 }
-.area-name { font-size: 14px; font-weight: 700; }
-.area-score { font-size: 16px; font-weight: 700; }
+
+.area-name {
+  color: var(--color-text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.area-score {
+  font-size: 16px;
+  font-weight: 850;
+}
+
 .area-score.high { color: var(--color-success); }
 .area-score.mid { color: var(--color-warning); }
 .area-score.low { color: var(--color-error); }
+
 .area-bar {
-  height: 8px;
-  background: #e8e8ee;
-  border-radius: 4px;
   overflow: hidden;
-  margin: 8px 0;
+  height: 8px;
+  margin: 9px 0;
+  background: #e2e8f0;
+  border-radius: 999px;
 }
+
 .area-fill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 999px;
   transition: width 1s ease;
 }
-.area-fill.high { background: linear-gradient(90deg, var(--color-success), #34d399); }
-.area-fill.mid { background: linear-gradient(90deg, var(--color-warning), #fbbf24); }
-.area-fill.low { background: linear-gradient(90deg, var(--color-error), #f87171); }
-.area-desc { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-top: 8px; }
+
+.area-fill.high { background: var(--color-success); }
+.area-fill.mid { background: var(--color-warning); }
+.area-fill.low { background: var(--color-error); }
+
+.area-desc {
+  margin-top: 8px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@media (max-width: 720px) {
+  .areas-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

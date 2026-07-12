@@ -18,51 +18,66 @@ defineProps<{ role: 'interviewer' | 'candidate' }>()
   display: flex;
   gap: 12px;
   margin: 16px 0;
-  animation: slideIn 0.25s ease;
+  animation: slideIn 0.22s ease;
 }
+
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 .chat-bubble.candidate {
   flex-direction: row-reverse;
 }
+
 .bubble-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
   flex-shrink: 0;
+  border-radius: 12px;
   box-shadow: var(--shadow-xs);
+  font-size: 13px;
+  font-weight: 800;
 }
+
 .interviewer .bubble-avatar {
-  background: linear-gradient(135deg, var(--color-primary), #7c3aed);
   color: #fff;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
 }
+
 .candidate .bubble-avatar {
-  background: linear-gradient(135deg, #e8e8ee, #d8d8e2);
   color: var(--color-text);
+  background: #e2e8f0;
 }
+
 .bubble-content {
-  max-width: 72%;
-  padding: 14px 18px;
-  border-radius: 14px;
+  max-width: min(74%, 680px);
+  padding: 14px 17px;
+  border-radius: var(--radius-lg);
   font-size: 14px;
-  line-height: 1.65;
+  line-height: 1.7;
 }
+
 .interviewer .bubble-content {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-top-left-radius: 4px;
+  border-top-left-radius: var(--radius-sm);
   box-shadow: var(--shadow-xs);
 }
+
 .candidate .bubble-content {
-  background: linear-gradient(135deg, var(--color-primary), #7c3aed);
   color: #fff;
-  border-top-right-radius: 4px;
+  background: var(--color-primary);
+  border-top-right-radius: var(--radius-sm);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16);
+}
+
+@media (max-width: 640px) {
+  .bubble-content {
+    max-width: calc(100% - 50px);
+  }
 }
 </style>

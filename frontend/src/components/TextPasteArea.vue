@@ -25,33 +25,41 @@ watch(() => props.modelValue, (v) => { content.value = v })
 
 <style scoped>
 .paste-area {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
   overflow: hidden;
   background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
+
 .paste-area:focus-within {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: var(--focus-ring);
 }
+
 .paste-input {
   width: 100%;
+  min-height: 168px;
   border: none;
-  padding: 16px;
-  font-size: 14px;
-  font-family: inherit;
-  resize: vertical;
-  outline: none;
-  line-height: 1.6;
+  padding: 15px 16px;
+  color: var(--color-text);
   background: transparent;
+  font-size: 14px;
+  line-height: 1.65;
+  resize: vertical;
 }
+
+.paste-input::placeholder {
+  color: #94a3b8;
+}
+
 .paste-footer {
-  padding: 8px 16px;
-  border-top: 1px solid var(--color-border);
-  font-size: 12px;
-  color: var(--color-text-secondary);
   display: flex;
   justify-content: flex-end;
+  padding: 8px 16px;
+  color: var(--color-text-secondary);
+  background: var(--color-surface-soft);
+  border-top: 1px solid var(--color-border);
+  font-size: 12px;
 }
 </style>

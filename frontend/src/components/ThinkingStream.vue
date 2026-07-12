@@ -1,10 +1,10 @@
 <template>
-  <div class="thinking-stream">
+  <div v-if="items.length" class="thinking-stream">
     <div class="stream-header">
       <span class="pulse"></span>
-      Agent 思考过程
+      <span>Agent 思考过程</span>
     </div>
-    <div class="stream-body" ref="bodyRef">
+    <div ref="bodyRef" class="stream-body">
       <div v-for="(item, i) in items" :key="i" class="think-item">
         <span class="think-action">{{ labelOf(item.action) }}</span>
         <span class="think-detail">{{ detailOf(item.action) }}</span>
@@ -33,7 +33,7 @@ const DETAILS: Record<string, string> = {
   classify: '正在分析用户意图...',
   plan: '正在拆解检索子问题...',
   search: '正在搜索简历、JD 和网络信息...',
-  fuse: '正在去重和整合检索结果...',
+  fuse: '正在去重并整合检索结果...',
   reflect: '正在评估检索质量，必要时补充搜索...',
   generate: '正在生成岗位匹配度分析报告...',
 }
@@ -55,60 +55,86 @@ watch(() => props.items.length, () => {
 
 <style scoped>
 .thinking-stream {
+  overflow: hidden;
+  margin: 0 0 20px;
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: #fafafa;
-  margin: 16px 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
 }
+
 .stream-header {
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
+  padding: 12px 16px;
+  color: var(--color-text);
+  background: var(--color-surface-soft);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 14px;
+  font-weight: 750;
 }
+
 .pulse {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 999px;
   background: var(--color-success);
   animation: pulse 1.5s infinite;
 }
+
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.82); }
 }
+
 .stream-body {
-  max-height: 300px;
+  max-height: 260px;
   overflow-y: auto;
-  padding: 12px 16px;
+  padding: 10px 14px;
   font-size: 13px;
 }
+
 .think-item {
-  padding: 6px 0;
-  border-bottom: 1px solid #f0f0f0;
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 9px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f7;
 }
+
+.think-item:last-child {
+  border-bottom: none;
+}
+
 .think-action {
-  background: var(--color-primary);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 72px;
+  padding: 3px 8px;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 750;
+  text-align: center;
 }
+
 .think-detail {
-  color: var(--color-text-secondary);
   flex: 1;
-}
-.think-round {
-  font-size: 11px;
   color: var(--color-text-secondary);
+}
+
+.think-round {
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .think-item {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+  }
 }
 </style>

@@ -3,7 +3,7 @@
     <div v-if="!started" class="interview-start">
       <div class="start-card">
         <div class="start-icon">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
             <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
             <line x1="12" y1="19" x2="12" y2="23"/>
@@ -11,12 +11,12 @@
           </svg>
         </div>
         <h1>模拟面试</h1>
-        <p>AI 面试官将基于 JD 要求和你的简历缺口出题，模拟真实面试场景</p>
+        <p>AI 面试官将基于 JD 要求和你的简历缺口出题，模拟真实面试场景。</p>
         <div class="start-form">
-          <label>输入 Match Task ID 开始面试</label>
-          <input v-model="taskIdInput" placeholder="例如：a1b2c3d4" class="task-input" />
+          <label for="task-id">输入 Match Task ID 开始面试</label>
+          <input id="task-id" v-model="taskIdInput" placeholder="例如：a1b2c3d4" class="task-input" />
         </div>
-        <button class="btn-primary" :disabled="loading || !taskIdInput" @click="start">
+        <button class="btn-primary" type="button" :disabled="loading || !taskIdInput" @click="start">
           {{ loading ? '正在准备面试题...' : '开始面试' }}
         </button>
       </div>
@@ -43,7 +43,7 @@
           <FeedbackCard v-if="msg.feedback" :feedback="msg.feedback" />
         </div>
 
-        <div v-if="waiting" class="typing-indicator">
+        <div v-if="waiting" class="typing-indicator" aria-label="AI 正在思考">
           <span></span><span></span><span></span>
         </div>
       </div>
@@ -57,10 +57,10 @@
 
       <div v-if="finished" class="interview-done">
         <div class="done-card">
-          <div class="done-icon">&#10003;</div>
+          <div class="done-icon">✓</div>
           <h2>面试完成</h2>
-          <p>所有问题已回答完毕，可以查看详细面试报告</p>
-          <button class="btn-primary" @click="viewReport">查看面试报告</button>
+          <p>所有问题已回答完毕，可以查看详细面试报告。</p>
+          <button class="btn-primary" type="button" @click="viewReport">查看面试报告</button>
         </div>
       </div>
     </div>
@@ -135,161 +135,229 @@ function viewReport() {
 </script>
 
 <style scoped>
-.interview-page { max-width: 800px; margin: 0 auto; }
-
-/* Start */
-.interview-start {
-  padding: 40px 20px;
+.interview-page {
+  max-width: 860px;
+  margin: 0 auto;
 }
+
+.interview-start {
+  padding: 34px 0;
+}
+
 .start-card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  padding: 48px 40px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 42px 38px;
   text-align: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
 }
+
 .start-icon {
+  width: 78px;
+  height: 78px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--color-primary-light);
+  margin-bottom: 18px;
   color: var(--color-primary);
-  margin-bottom: 20px;
+  background: var(--color-primary-light);
+  border-radius: 22px;
 }
+
 .start-card h1 {
-  font-size: 26px;
-  font-weight: 800;
   margin-bottom: 10px;
+  color: var(--color-text);
+  font-size: 28px;
+  font-weight: 850;
+  line-height: 1.25;
 }
+
 .start-card p {
+  max-width: 520px;
+  margin: 0 auto 26px;
   color: var(--color-text-secondary);
   font-size: 15px;
-  margin-bottom: 28px;
-  line-height: 1.6;
+  line-height: 1.75;
 }
-.start-form { margin: 16px 0; }
-.start-form label { display: block; margin-bottom: 8px; font-size: 14px; color: var(--color-text-secondary); }
+
+.start-form {
+  margin: 18px 0;
+}
+
+.start-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 650;
+}
+
 .task-input {
-  padding: 12px 18px;
+  width: min(100%, 320px);
+  padding: 12px 16px;
+  color: var(--color-text);
+  background: #fff;
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
-  font-size: 15px;
-  width: 260px;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.15s;
   font-family: var(--font-mono);
-  letter-spacing: 1px;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.task-input:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-light); }
+
+.task-input:focus {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
 
 .btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 14px 38px;
-  background: linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%);
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 32px;
   color: #fff;
-  border: none;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
   border-radius: var(--radius);
-  font-size: 15px;
-  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-  margin-top: 8px;
-}
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
-.btn-primary:not(:disabled):hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+  font-size: 15px;
+  font-weight: 800;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
-/* Active interview header */
-.interview-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 0;
-  margin-bottom: 12px;
+.btn-primary:disabled {
+  opacity: 0.45;
+  box-shadow: none;
 }
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.interview-active {
+  padding-bottom: 20px;
+}
+
+.interview-header {
+  position: sticky;
+  top: 72px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 12px 0;
+  background: rgba(246, 248, 251, 0.86);
+  backdrop-filter: blur(10px);
+}
+
 .interview-badge {
-  font-size: 13px;
-  font-weight: 700;
+  padding: 6px 12px;
   color: var(--color-primary);
   background: var(--color-primary-light);
-  padding: 5px 14px;
-  border-radius: 20px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
 }
+
 .interview-progress {
-  font-size: 14px;
-  font-weight: 600;
   color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 750;
 }
 
-/* Chat area */
 .chat-area {
-  margin: 16px 0;
+  margin: 12px 0;
 }
 
-/* Typing indicator */
 .typing-indicator {
   display: flex;
+  width: fit-content;
   gap: 5px;
-  padding: 14px 18px;
   margin: 12px 0;
+  padding: 13px 16px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 12px;
-  width: fit-content;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
 }
+
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
   background: var(--color-text-secondary);
+  border-radius: 999px;
   animation: typing 1.4s infinite;
 }
+
 .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
 .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
 @keyframes typing {
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-4px); }
 }
 
-/* Done */
 .interview-done {
-  margin: 40px 0;
+  margin: 36px 0;
 }
+
 .done-card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  padding: 48px 40px;
+  padding: 42px 34px;
   text-align: center;
-  box-shadow: var(--shadow);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
+
 .done-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--color-success);
-  color: #fff;
-  font-size: 30px;
+  width: 62px;
+  height: 62px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+  color: #fff;
+  background: var(--color-success);
+  border-radius: 18px;
+  font-size: 28px;
+  font-weight: 900;
 }
+
 .done-card h2 {
+  margin-bottom: 8px;
+  color: var(--color-text);
   font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 10px;
+  font-weight: 850;
 }
+
 .done-card p {
+  margin-bottom: 22px;
   color: var(--color-text-secondary);
-  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .interview-start {
+    padding: 12px 0;
+  }
+
+  .start-card {
+    padding: 32px 22px;
+  }
+
+  .interview-header {
+    top: 62px;
+  }
 }
 </style>

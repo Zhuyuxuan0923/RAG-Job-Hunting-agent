@@ -17,7 +17,7 @@
       </section>
 
       <div class="actions">
-        <router-link to="/" class="btn-secondary">返回首页</router-link>
+        <router-link to="/" class="btn-secondary">返回工作台</router-link>
       </div>
     </div>
 
@@ -51,49 +51,78 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.interview-report { max-width: 800px; margin: 0 auto; }
-.report-content {
-  animation: fadeIn 0.4s ease;
+.interview-report {
+  max-width: 880px;
+  margin: 0 auto;
 }
+
+.report-content {
+  animation: fadeIn 0.35s ease;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-section { margin: 36px 0; }
-section h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 18px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--color-primary-light);
-}
-.actions { text-align: center; margin: 36px 0; }
-.btn-secondary {
-  display: inline-block;
-  padding: 12px 32px;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.15s;
-}
-.btn-secondary:hover {
-  background: var(--color-primary-light);
+
+section {
+  margin: 30px 0;
 }
 
-/* Loading */
-.loading-state { text-align: center; padding: 80px 20px; color: var(--color-text-secondary); }
+section h2 {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.actions {
+  margin: 34px 0 10px;
+  text-align: center;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 28px;
+  color: var(--color-primary);
+  background: #fff;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.btn-secondary:hover {
+  background: var(--color-primary-light);
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.loading-state {
+  padding: 80px 20px;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
 .loading-spinner {
-  width: 36px; height: 36px;
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 14px;
   border: 3px solid var(--color-border);
   border-top-color: var(--color-primary);
   border-radius: 50%;
-  margin: 0 auto 14px;
   animation: spin 0.8s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>

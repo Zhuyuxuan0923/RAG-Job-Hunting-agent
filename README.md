@@ -1,43 +1,30 @@
 # Agentic RAG 求职助手
 
-基于 **LangGraph 多智能体协作** + **RAG 检索增强生成**的 AI 求职助手。支持简历/JD 智能解析、岗位匹配度分析、AI 模拟面试，全链路 SSE 实时反馈。
+基于 **LangGraph Agent 编排** 与 **RAG 检索增强生成** 的 AI 求职助手。系统支持简历/JD 上传解析、岗位匹配度分析、SSE 实时进度反馈、AI 模拟面试和面试报告生成，帮助求职者更高效地判断岗位匹配度并准备面试。
 
-## 架构概览
+![项目首页截图](docs/assets/upload-page-desktop.png)
 
-```
-用户 → Vue 3 前端 → FastAPI 后端 → LangGraph Agent 编排
-                                      ├─ Classify（意图分类）
-                                      ├─ Plan（检索规划）
-                                      ├─ Search（多工具检索）
-                                      ├─ Fuse（结果去重融合）
-                                      ├─ Reflect（4维度反思）← 循环最多3轮
-                                      └─ Generate（生成报告）
-                       ↓
-              ChromaDB（向量检索）
-              Tavily（网络搜索）
-              DeepSeek V4 Pro（LLM）
-              SiliconFlow Embedding（向量化）
-```
+## 核心功能
 
-## 功能
-
-- **简历/JD 解析入库**：支持 PDF/DOCX/TXT，语义分块后向量化存入 ChromaDB
-- **岗位匹配分析**：Agent 自主检索 + 反思迭代，输出评分、技能对比、技能缺口、改进建议、面试准备清单
-- **AI 模拟面试**：多维度面试题生成 + 实时回答评估 + 面试报告（薄弱环节 & 学习计划）
-- **SSE 实时进度**：4 种事件类型（progress/thinking/result/done），Agent 思考过程可视化
+- **简历/JD 上传解析**：支持 PDF、DOCX、DOC 等文件上传，自动解析文本并进行语义分块。
+- **岗位匹配分析**：基于简历、职位描述、向量检索和网络搜索，生成匹配评分、技能缺口和准备建议。
+- **Agent 反思迭代**：通过 LangGraph 编排意图分类、检索规划、多源检索、融合去重、反思补查和报告生成。
+- **SSE 实时反馈**：分析过程通过 `progress`、`thinking`、`result`、`done` 等事件流式返回。
+- **AI 模拟面试**：根据简历和 JD 生成面试题，评估用户回答，并输出面试报告与学习计划。
 
 ## 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| **Agent 框架** | LangGraph StateGraph（6 节点 + 条件边） |
-| **后端** | Python 3.14 + FastAPI + SSE |
-| **前端** | Vue 3 + Vite + TypeScript |
-| **向量数据库** | ChromaDB（4 个 Collection） |
-| **LLM** | DeepSeek V4 Pro |
-| **Embedding** | SiliconFlow Qwen3-Embedding-0.6B（1024维） |
-| **搜索引擎** | Tavily Search API |
-| **文档解析** | PyMuPDF（PDF）+ python-docx（DOCX） |
+| 模块 | 技术 |
+| --- | --- |
+| 前端 | Vue 3、Vite、TypeScript、Vue Router |
+| 后端 | Python 3.11+、FastAPI、Uvicorn、Pydantic |
+| Agent | LangGraph、LangChain Tools |
+| RAG | ChromaDB、SiliconFlow Qwen3-Embedding-0.6B |
+| LLM | DeepSeek V4 Pro（OpenAI SDK 兼容调用） |
+| 搜索 | Tavily Search API |
+| 文档解析 | PyMuPDF、python-docx |
+| 通信 | REST API、Server-Sent Events |
+| 部署 | Docker、Docker Compose |
 
 ## 快速开始
 
@@ -49,126 +36,99 @@ cd backend
 poetry install
 
 # 前端
-cd frontend
+cd ../frontend
 npm install
 ```
 
 ### 2. 配置环境变量
 
-在 `backend/.env` 中填入 API Key：
+在 `backend/.env` 中配置：
 
 ```env
-DEEPSEEK_API_KEY=你的DeepSeek_API_Key
+DEEPSEEK_API_KEY=你的 DeepSeek API Key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
-TAVILY_API_KEY=你的Tavily_API_Key
-EMBEDDING_API_KEY=你的SiliconFlow_API_Key
+TAVILY_API_KEY=你的 Tavily API Key
+EMBEDDING_API_KEY=你的 SiliconFlow API Key
 EMBEDDING_BASE_URL=https://api.siliconflow.cn/v1
 ```
 
 ### 3. 启动服务
 
 ```bash
-# 启动后端（端口 8000）
+# 后端，端口 8000
 cd backend
-poetry run uvicorn src.main:app --port 8000 --reload
+poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 
-# 启动前端（端口 5173）
+# 前端，端口 5173
 cd frontend
 npm run dev
 ```
 
-打开 http://localhost:5173 使用。
+访问：
+
+- 前端页面：`http://localhost:5173`
+- 后端接口文档：`http://localhost:8000/docs`
+- 健康检查：`http://localhost:8000/api/health`
+
+也可以直接运行项目根目录下的快速启动脚本：
+
+```bash
+start.bat
+```
 
 ## Docker 部署
-
-适合部署到腾讯云轻量应用服务器等云环境。
-
-### 1. 准备服务器
-
-```bash
-# 安装 Docker 和 Docker Compose（以 Ubuntu 为例）
-sudo apt update && sudo apt install docker.io docker-compose-v2 -y
-sudo systemctl enable docker --now
-```
-
-### 2. 拉取项目
-
-```bash
-git clone https://github.com/Zhuyuxuan0923/RAG-Job-Hunting-agent.git
-cd RAG-Job-Hunting-agent
-```
-
-### 3. 配置环境变量
-
-```bash
-cp .env.example .env
-# 编辑 .env，填入你的 API Key
-vim .env
-```
-
-### 4. 构建并启动
 
 ```bash
 docker compose up -d
 ```
 
-启动后访问 `http://<服务器IP>` 即可使用。
-
-### 常用命令
+常用命令：
 
 ```bash
-docker compose up -d        # 启动
-docker compose down         # 停止
-docker compose logs -f      # 查看日志
-docker compose build --no-cache  # 重新构建
-docker compose restart      # 重启
+docker compose logs -f
+docker compose restart
+docker compose down
+docker compose build --no-cache
 ```
 
 ## 项目结构
 
-```
-├── backend/
-│   ├── src/
-│   │   ├── agent/          # LangGraph Agent 编排
-│   │   │   ├── graph.py    # 6节点 StateGraph
-│   │   │   ├── state.py    # Agent 状态定义
-│   │   │   ├── tools.py    # 5个 Agent 工具
-│   │   │   ├── reflection.py  # 4维度反思
-│   │   │   └── prompts.py  # Prompt 模板
-│   │   ├── api/            # FastAPI 路由
-│   │   │   ├── match.py    # 匹配分析 + SSE 流
-│   │   │   ├── interview.py # 模拟面试
-│   │   │   ├── resume.py   # 简历上传
-│   │   │   └── jd.py       # JD 上传
-│   │   ├── services/       # 核心服务
-│   │   │   ├── vectordb.py # ChromaDB 向量存储
-│   │   │   ├── embeddings.py # 向量化
-│   │   │   ├── parser.py   # 文档解析
-│   │   │   └── chunker.py  # 语义分块
-│   │   ├── models/         # Pydantic 数据模型
-│   │   └── config.py       # 配置管理
-│   └── tests/              # 测试
-├── frontend/
-│   └── src/
-│       ├── components/     # 12个Vue组件
-│       ├── pages/          # 4个页面路由
-│       ├── composables/    # SSE流式消费Hook
-│       └── api/            # API 客户端
+```text
+├── backend/                 # FastAPI 后端与 Agent/RAG 逻辑
+├── frontend/                # Vue 3 前端
+├── docs/                    # 项目文档与截图资源
+├── docker-compose.yml
+├── docker-compose.dev.yml
+├── start.bat
+├── start.sh
 └── README.md
 ```
 
-## API 接口
+## API 概览
 
 | 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/api/resume/upload` | 上传简历 |
-| POST | `/api/jd/upload` | 上传 JD |
-| POST | `/api/match` | 创建匹配任务 |
-| GET | `/api/match/{id}/stream` | SSE 流式获取匹配结果 |
-| GET | `/api/match/{id}/report` | 获取匹配报告 |
-| POST | `/api/interview/start` | 开始模拟面试 |
-| POST | `/api/interview/{id}/answer` | 提交面试回答 |
-| GET | `/api/interview/{id}/report` | 获取面试报告 |
+| --- | --- | --- |
+| `GET` | `/api/health` | 健康检查 |
+| `POST` | `/api/resume/upload` | 上传简历 |
+| `POST` | `/api/jd/upload` | 上传 JD |
+| `POST` | `/api/match` | 创建匹配任务 |
+| `GET` | `/api/match/{task_id}/stream` | SSE 获取分析进度与结果 |
+| `GET` | `/api/match/{task_id}/report` | 获取匹配报告 |
+| `POST` | `/api/interview/start` | 开始模拟面试 |
+| `POST` | `/api/interview/{session_id}/answer` | 提交面试回答 |
+| `GET` | `/api/interview/{session_id}/report` | 获取面试报告 |
+
+## 验证
+
+```bash
+# 前端构建
+cd frontend
+npm run build
+
+# 后端测试
+cd backend
+poetry run pytest
+```
 
 ## License
 

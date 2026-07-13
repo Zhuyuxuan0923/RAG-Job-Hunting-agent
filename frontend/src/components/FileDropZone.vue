@@ -46,20 +46,20 @@ function onFileSelect(e: Event) {
 
 <style scoped>
 .drop-zone {
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed rgba(244, 123, 18, 0.28);
   border-radius: var(--radius-lg);
-  padding: 34px 24px;
+  padding: 30px 24px;
   text-align: center;
   transition: border-color 0.18s, background 0.18s, transform 0.18s, box-shadow 0.18s;
   cursor: pointer;
-  background: linear-gradient(180deg, #ffffff 0%, var(--color-surface-soft) 100%);
+  background: rgba(255, 255, 255, 0.56);
 }
 
 .drop-zone:hover,
 .drop-zone.drag-over {
   border-color: var(--color-primary);
-  background: #f8fbff;
-  box-shadow: var(--focus-ring);
+  background: rgba(255, 248, 234, 0.82);
+  box-shadow: 0 0 0 3px rgba(244, 123, 18, 0.12), 0 14px 30px rgba(244, 123, 18, 0.13);
 }
 
 .drop-zone.drag-over {
@@ -67,15 +67,16 @@ function onFileSelect(e: Event) {
 }
 
 .drop-icon {
-  width: 62px;
-  height: 62px;
+  width: 58px;
+  height: 58px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 14px;
   color: var(--color-primary);
-  background: var(--color-primary-light);
-  border-radius: 18px;
+  background: rgba(255, 241, 216, 0.86);
+  border: 1px solid rgba(244, 123, 18, 0.16);
+  border-radius: 17px;
 }
 
 .drop-text {
@@ -94,18 +95,20 @@ function onFileSelect(e: Event) {
   margin-top: 16px;
   padding: 8px 18px;
   color: #fff;
-  background: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  background: linear-gradient(180deg, #ff9d28 0%, #f27409 100%);
+  border: 1px solid rgba(212, 102, 9, 0.7);
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+  box-shadow: 0 9px 20px rgba(244, 123, 18, 0.2);
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.15s;
 }
 
 .btn-select:hover {
-  background: var(--color-primary-dark);
+  background: linear-gradient(180deg, #ffaa3b 0%, #e86506 100%);
   border-color: var(--color-primary-dark);
   transform: translateY(-1px);
+  box-shadow: 0 11px 26px rgba(244, 123, 18, 0.28);
 }
 </style>

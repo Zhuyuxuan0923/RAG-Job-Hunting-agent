@@ -26,7 +26,7 @@ watch(() => props.modelValue, (v) => { content.value = v })
 <style scoped>
 .paste-area {
   overflow: hidden;
-  background: var(--color-surface);
+  background: rgba(255, 255, 255, 0.58);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -50,7 +50,7 @@ watch(() => props.modelValue, (v) => { content.value = v })
 }
 
 .paste-input::placeholder {
-  color: #94a3b8;
+  color: #aaa08f;
 }
 
 .paste-footer {
@@ -58,7 +58,7 @@ watch(() => props.modelValue, (v) => { content.value = v })
   justify-content: flex-end;
   padding: 8px 16px;
   color: var(--color-text-secondary);
-  background: var(--color-surface-soft);
+  background: rgba(255, 248, 234, 0.68);
   border-top: 1px solid var(--color-border);
   font-size: 12px;
 }

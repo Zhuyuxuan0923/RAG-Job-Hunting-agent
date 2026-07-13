@@ -3,31 +3,37 @@
     <div class="header-inner">
       <router-link to="/" class="logo" aria-label="返回工作台">
         <span class="logo-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 3l8 4.5-8 4.5-8-4.5L12 3z"/>
-            <path d="M4 12l8 4.5 8-4.5"/>
-            <path d="M4 16.5l8 4.5 8-4.5"/>
+          <svg width="25" height="25" viewBox="0 0 24 24" aria-hidden="true">
+            <g class="sunflower-petals">
+              <ellipse cx="12" cy="3.7" rx="1.55" ry="3.05"/>
+              <ellipse cx="12" cy="20.3" rx="1.55" ry="3.05"/>
+              <ellipse cx="3.7" cy="12" rx="3.05" ry="1.55"/>
+              <ellipse cx="20.3" cy="12" rx="3.05" ry="1.55"/>
+              <ellipse cx="6.15" cy="6.15" rx="1.45" ry="2.85" transform="rotate(-45 6.15 6.15)"/>
+              <ellipse cx="17.85" cy="17.85" rx="1.45" ry="2.85" transform="rotate(-45 17.85 17.85)"/>
+              <ellipse cx="17.85" cy="6.15" rx="1.45" ry="2.85" transform="rotate(45 17.85 6.15)"/>
+              <ellipse cx="6.15" cy="17.85" rx="1.45" ry="2.85" transform="rotate(45 6.15 17.85)"/>
+            </g>
+            <circle class="sunflower-center" cx="12" cy="12" r="5.1"/>
+            <circle class="sunflower-core" cx="12" cy="12" r="2.15"/>
           </svg>
         </span>
         <span class="logo-text">Agentic RAG 求职助手</span>
       </router-link>
-
-      <nav class="nav-links" aria-label="主导航">
-        <router-link to="/" class="nav-link">工作台</router-link>
-        <span class="header-status">AI 面试准备工作流</span>
-      </nav>
     </div>
   </header>
 </template>
 
 <style scoped>
 .app-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
-  background: rgba(255, 255, 255, 0.88);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-  backdrop-filter: blur(16px);
+  background: transparent;
+  border-bottom: 0;
+  backdrop-filter: none;
 }
 
 .header-inner {
@@ -36,7 +42,7 @@
   padding: 13px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
 }
 
@@ -57,9 +63,25 @@
   justify-content: center;
   flex-shrink: 0;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  background: linear-gradient(135deg, #ff9b25, #6d9b42);
   border-radius: 10px;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 8px 20px rgba(244, 123, 18, 0.22);
+}
+
+.logo-icon svg {
+  display: block;
+}
+
+.sunflower-petals {
+  fill: #ffd65a;
+}
+
+.sunflower-center {
+  fill: #7b4a16;
+}
+
+.sunflower-core {
+  fill: #4e2c0d;
 }
 
 .logo-text {
@@ -71,45 +93,6 @@
   white-space: nowrap;
 }
 
-.nav-links {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  min-width: 0;
-}
-
-.nav-link,
-.header-status {
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  padding: 6px 13px;
-  font-size: 13px;
-  font-weight: 650;
-  line-height: 1.3;
-  white-space: nowrap;
-}
-
-.nav-link {
-  color: var(--color-primary);
-  background: #fff;
-  text-decoration: none;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.nav-link:hover,
-.nav-link.router-link-active {
-  color: var(--color-primary-dark);
-  background: var(--color-primary-light);
-  border-color: #bfdbfe;
-}
-
-.header-status {
-  color: var(--color-accent);
-  background: var(--color-accent-light);
-  border-color: #99f6e4;
-}
-
 @media (max-width: 640px) {
   .header-inner {
     padding: 12px 16px;
@@ -117,10 +100,6 @@
 
   .logo-text {
     font-size: 15px;
-  }
-
-  .header-status {
-    display: none;
   }
 }
 </style>
